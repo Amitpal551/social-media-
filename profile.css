@@ -1,0 +1,26 @@
+.profile-main{
+    flex-basis: 73%;
+}
+.profile-sidebar{
+    flex-basis: 25%;
+    align-self: flex-start;
+    position: sticky;
+    top: 73%;
+}
+.profile-container{
+    background: #fff;
+
+}
+.profile-contaoner-inner{
+    padding: 0 4% 10px;
+}
+.profile-pic{
+    width: 150px;
+    border-radius: 50%;
+    margin-top: -75px;
+    padding: 5px;
+    background: white;
+}
+
+
+
