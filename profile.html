@@ -1,0 +1,694 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <link rel="stylesheet"  href="{% static 'css/base.css' %}">
+
+    <title>social media website</title>
+   
+  </head>
+  <body onload="loadConnections('{{ user.username }}')">
+    <nav class="navbar">
+        <div class="navbar-left">
+          <a href="{% url 'base' %}" class="logo"><img src ="{{profile.profileimg_main.url}}" class="profile-pic-logo" data-profile-img></a>
+          <div class="search-box"><input type="text" placeholder="search">
+          </div>
+        </div>
+        <div class="navbar-center">
+          <ul>
+            {% if user.username == request.user.username %}
+             <li><a href="#" class="active-link"><img src ="{% static 'image/th.jpg' %}" ><span> HOME</span></a></li>
+            {% endif %}
+            {% if user.username == request.user.username %}
+             <li><a href="{% url 'my_network' %}"><img src ="{% static 'image/th.jpg' %}" ><span>MY NETWORK</span></a></li>
+            {% endif %}
+            {% if user.username == request.user.username %}
+             <li><a href="#"><img src ="{% static 'image/th.jpg' %}" ><span> JOBS</span></a></li>
+            {% endif %}
+            {% if user.username == request.user.username %}
+             <li><a href="{% url 'user_list' %}"><img src ="{% static 'image/th.jpg' %}" ><span> MESSAGING</span></a></li>
+            {% endif %}
+            {% if user.username == request.user.username %}
+             <li><a href="{% url 'notification' %}"><img src ="{% static 'image/th.jpg' %}" ><span> NOTIFICATION</span></a></li>
+            {% endif %}
+          </ul>
+  
+        </div>
+        <div class="navbar-right">
+          <div class="online">
+          <img src ="{{profile.profileimg_main.url}}" class="nav-profile-img" class="profile-pic-online" data-profile-img  onclick="toggleMenu()">
+          </div>
+  
+        </div>
+  
+        <div class="profile-menu-wrap" id="profileMenu">
+          <div class="profile-menu">
+            <div class="user-info">
+              <img src="{{profile.profileimg_main.url}}" class="profile-pic-toggle" data-profile-img>
+              <div>
+                <h3>{{user.username}}</h3>
+                <a href="{% url 'profile' request.user.username %}"> See your profile</a>
+              </div>
+            </div>
+            <hr>
+            <a href="#" class="profile-menu-link">
+              <img src ="{% static 'image/th.jpg' %}" >
+              <p>Give feedback</p>
+              <span></span>
+            </a>
+            {% if user.username == request.user.username %}
+            <a href="{% url 'profile_settings' %}" class="profile-menu-link">
+              <img src ="{% static 'image/th.jpg' %}" >
+              <p>Settings and privacy</p>
+              <span></span>
+            </a>
+            {% endif %}
+            <a href="#" class="profile-menu-link">
+              <img src ="{% static 'image/th.jpg' %}" >
+              <p>Help and support</p>
+              <span></span>
+  
+            </a>
+            <a href="#" class="profile-menu-link">
+              <img src ="{% static 'image/th.jpg' %}" >
+              <p>Display and accessibility</p>
+              <span></span>
+            </a>
+            <a href="{% url 'logout' %}" class="profile-menu-link">
+              <img src ="{% static 'image/th.jpg' %}" >
+              <p>logout</p>
+              <span></span>
+  
+            </a>
+  
+          </div>
+        </div>
+       
+      </nav>
+
+
+
+
+      <div class="container">
+        <div class="profile-main">
+            <div class="profile-container">
+              <img id="profile-pic" src="{{ profile.profileimg_main.url }}" class="profile-pic-main" data-profile-img width="100%">
+              {% if user.username == request.user.username %}
+               <div class="camera-icon">
+                 <img id="camera-icon" src="{% static 'image/camera-icon-iphone-clipart-1.jpg' %}" style="cursor:pointer;">
+                 <form id="profile-picture-form" method="post" enctype="multipart/form-data"
+                  data-upload-url="{% url 'upload_main_picture' %}">
+                  {% csrf_token %}
+                  <input type="file" id="profile-picture-upload-main" name="main_picture" accept="image/*">
+                 </form>
+               </div>
+              {% endif %}
+
+              <div class="profile-container-inner">
+                <img src="{{ profile.profileimg_inner.url }}" class="profile-pic profile-pic-inner" id="profile-pic-inner">
+                {% if user.username == request.user.username %}
+       
+                <button id="edit-btn" style="display:none;">Edit</button>
+                <div id="edit-menu" class="edit-menu" style="display:none;">
+                 <button id="upload-gallery">Upload from Gallery</button>
+                 <button id="upload-avatar">Choose AI Avatar</button>
+                 
+                </div>
+
+                     <!-- Hidden file input for gallery upload -->
+                <form id="profile-picture-form-inner" method="post" enctype="multipart/form-data"
+                        data-upload-url="{% url 'upload_inner_picture' %}">
+                   {% csrf_token %}
+                    <input type="file" id="profile-picture-upload-inner" name="inner_picture" accept="image/*" style="display:none;">
+                 </form>
+               {% endif %}
+           
+     
+                    <h1>{{user.username|capfirst}}</h1>
+                    <p>&middot;<button id="contact-link">Contact info</button></p>
+                    <div id="contact-modal" class="modal" style="display:none;">
+                      <div class="modal-content">
+                       <span id="close-modal">&times;</span>
+                        <h2>{{ user.username|capfirst }}</h2>
+
+                         {% if profile.show_email and user.email %}
+                              <p>Email: {{ user.email }}</p>
+                          {% else%}
+                              <p>No Email Available</p>
+                          {% endif %}
+
+                           {% if profile.show_phone and profile.phone_number %}
+                              <p>Phone: {{ profile.phone_number }}</p>
+                          {% else%}
+                              <p>No Phone Available</p>
+                          {% endif %}
+
+                          {% if about.description %} 
+                          <p>About: {{ about.description|truncatechars:120 }}</p> 
+                          {% endif %}
+
+                          {% if profile.show_website and profile.website %}
+                              <p>Website: <a href="{{ profile.website }}" target="_blank">{{ profile.website }}</a></p>
+                          {% endif %}
+
+                          {% if profile.location %}
+                              <p>Location: {{ profile.location }}</p>
+                          {% endif %}
+
+                      </div>
+                    </div>
+
+                    <div class="mutual-connection">
+                       <img src ="{% static 'image/th.jpg' %}">
+                       <span id="mutual-connections-text">
+                        Loading mutual connections...
+                       </span>
+                       <button id="show-more-btn" style="display:none;">More options</button>
+                       <div id="dropdown-menu" style="display:none;" class="dropdown-menu"></div>
+                    </div>
+                    <div class="profile-btn">
+                        {% if user.username == request.user.username %}
+                            <button id="connectBtn" class="primiry-btn" data-username="{{ user.username|capfirst }}" data-csrf="{{ csrf_token }}">connect</button>
+                        {% endif %}
+                        
+                            <a href="{% url 'user_list' %}" class="primiry-btn"><img src ="{% static 'image/th.jpg' %}">Message</a>
+                        
+                    </div>
+                    
+                </div>
+
+            </div>
+            <div class="profile-discription" id = "about-section">
+              <h2>About</h2>
+              {% if user.username == request.user.username %}
+              <button class="add-about-btn" id="add-about-btn">Add About</button>
+              {% endif %}
+              <div class="popup" id="about-popup" style="display: none;">
+                  <div class="popup-content">
+                    <img src ="{% static 'image/close.jpg' %}"class="close" alt="close">
+                      <h1>Add About</h1>
+                      {% if user.username == request.user.username %}
+                        <form method="post" id="about-form">
+                          {% csrf_token %}
+                          {{ about_form.as_p }}
+                          {% if about %}
+                            <input type="hidden" name="about_id" value="{{ about.id }}">
+                          {% endif %}
+                          <button type="submit" name="about_submit">Save about</button>
+                       </form>
+                      {% endif %}
+                      
+                  </div>
+                </div>
+                <p class="about-text">
+                  {% if user.username == request.user.username %}
+                  {% if about.description|length > 50 %}
+                   <span class="short">{{ about.description|slice:":50" }}…</span>
+                   <span class="full" style="display:none;">{{ about.description }}</span>
+                    <a href="#" class="read-more">Read more</a>
+                  {% else %}
+                  {{ about.description }}
+                  {% endif %}
+                  {% else %}
+                  {{ about.description }}
+                  {% endif %}
+                </p>
+
+            </div>
+
+            <div class="profile-discription" id="experience-section">
+              <h2>Exprience</h2>
+              {% if user.username == request.user.username %}
+              <button class="add-experience-btn" id="add-experience-btn">Add Experience</button>
+              {% endif %}
+
+               <div class="popup" id="experience-popup" style="display: none;">
+                  <div class="popup-content">
+                    <img src ="{% static 'image/close.jpg' %}"class="close" alt="close">
+                      <h1>Add Experience</h1>
+                      {%if user.username == request.user.username %}
+                      <form method="post" id="experience-form">
+                        {% csrf_token %}
+                        {{ exprience_form.as_p }}
+                         <button type="submit"name="experience_submit">Save Experience</button>
+                      </form>
+                      {% endif %}
+                  </div>
+                </div>
+               {% for experience in user.experience_set.all|slice:"0:3" %}
+              <div class="profile-desc-row">
+                
+                <div>
+                  <h3>{{experience.job_title}}</h3>
+                  <b>{{experience.company_name}}</b>
+                  <b>{{experience.start_year}}- {{experience.end_year}}</b>
+                  <b>{{experience.get_employment_type_display}}</b>
+                  <p> {{experience.description}} </p>
+                  <hr>
+                  {% if user.username == request.user.username %}
+                   <a href="{% url 'edit_experience' experience.id %}"><button class="edit-experience-btn" id="edit-experience-btn">Edit Experience</button></a>
+                  <a href="{% url 'delete_experience' experience.id %}"><button class="delete-experience-btn" id="delete-experience-btn" onclick="return confirmDelete(event)">Delete Experience</button></a>
+                  {% endif %}
+                </div>
+              </div>
+              {% endfor %}
+              {% if user.experience_set.all|length > 3 %}
+              <div class="show-all-experience">
+              <button class="show-all-experience-btn" id="show-all-experience-link">Show all Experience</button>
+              </div>
+              {% endif %}
+
+
+              <div class="remaining-experience-list" id="remaining-experience-list" style="display: none;">
+                {% for experience in user.experience_set.all|slice:"3:" %}
+                  <div class="experience-item">
+                    <h3>{{experience.job_title}}</h3>
+                    <b>{{experience.company_name}}</b>
+                    <b>{{experience.start_year}}- {{experience.end_year}}</b>
+                    <b>{{experience.get_employment_type_display}}</b>
+                    <p> {{experience.description}} </p>
+                    <hr>
+                  {% if user.username == request.user.username %}
+                  <a href="{% url 'edit_experience' experience.id %}"><button class="edit-experience-btn" id="edit-experience-btn">Edit Experience</button></a>
+                  <a href="{% url 'delete_experience' experience.id %}"><button class="delete-experience-btn" id="delete-experience-btn" onclick="return confirmDelete(event)">Delete Experience</button></a>
+                  {% endif %}
+                  </div>
+                  {% endfor %}
+            
+            </div>
+            </div>
+            
+            
+
+
+        <div class="profile-discription" id="education-section">
+          <h2>Education</h2>
+          {% if user.username == request.user.username %}          
+          <button class="add-education-btn" id="add-education-btn">Add Education</button>
+          {% endif %}
+          <div class="popup" id="education-popup" style="display: none;">
+              <div class="popup-content">
+                <img src ="{% static 'image/close.jpg' %}"class="close" alt="close">
+                   <h1>Add Education</h1>
+                    {% if user.username == request.user.username %}
+                      <form method="post" id="education-form">
+                        {% csrf_token %}
+                        {{ education_form.as_p }}
+                         <button type="submit"name="education_submit">Save Education</button>
+                      </form>
+                    {% endif %}
+              </div>
+            </div>
+          
+          {% for education in user.education_set.all|slice:"0:3" %}
+          <div class="profile-desc-row">
+           
+            <div>
+              <h3>{{education.school_name}}</h3>
+              <b>{{education.degree}} in {{education.field_of_study}}</b>
+              <b>{{education.start_year}}-{{education.end_year}}</b>
+              <hr>
+
+              {% if user.username == request.user.username %}
+              <a href="{% url 'edit_education' education.id %}"><button class="edit-education-btn" id="edit-education-btn" >Edit Education</button></a>
+              <a href="{% url 'delete_education' education.id %}"><button class="delete-education-btn" id="delete-education-btn" onclick="return confirmDelete(event)">Delete Education</button></a>
+              {% endif %}
+            
+            </div>
+            
+          </div>
+          {% endfor %}
+          
+          
+          {% if educations|length > 3 %}
+          <div class="show-all-education">
+            <button class="show-all-education-btn" id="show-all-education-link">Show all Education </button>
+          </div>
+          {% endif %}
+
+          
+
+          <div class="remaining-education-list" id="remaining-education-list" style="display: none;">
+            {% for education in educations|slice:"3:" %}
+              <div class="education-item">
+              <h3>{{education.school_name}}</h3>
+              <b>{{education.degree}} in {{education.field_of_study}}</b>
+              <b>{{education.start_year}}-{{education.end_year}}</b>
+              <hr>
+              {% if user.username == request.user.username %}
+              <a href="{% url 'edit_education' education.id %}"><button class="edit-education-btn" id="edit-education-btn">Edit Education</button></a>
+              <a href="{% url 'delete_education' education.id %}"><button class="delete-education-btn" id="delete-education-btn" onclick="return confirmDelete(event)">Delete Education</button></a>
+              {% endif %}
+              </div>
+              {% endfor %}
+        
+        </div>
+        
+      </div>
+        
+            
+            
+            <div class="profile-discription" id="skill-section">
+               <h2>Skills</h2>
+               {% if user.username == request.user.username %}          
+                 <button class="add-skill-btn" id="add-skill-btn">Add Skill</button>
+               {% endif %}
+               <div class="popup" id="skill-popup" style="display: none;">
+                 <div class="popup-content">
+                     <img src ="{% static 'image/close.jpg' %}"class="close" alt="close">
+                     <h1>Add Skill</h1>
+                      {% if user.username == request.user.username %}
+                       <form method="post" id="skill-form">
+                         {% csrf_token %}
+                         {{ skill_form.as_p }}
+                         <button type="submit"name="skill_submit">Save Skill</button>
+                        </form>
+                      {% endif %}
+                   </div>
+                </div>
+              
+            
+                  {% for skill in user.skill_set.all|slice:"0:3" %}
+                  <div class="profile-desc-row">
+                    <div>
+
+                      <a href="{% url 'skillchoice' %}"><h3>{{ skill.skill_name }}</h3></a>
+                      <b>{{ skill.level }}</b>
+                      <hr>
+                     
+                     {% if user.username == request.user.username %}
+                      <a href="{% url 'edit_skill' skill.id %}"><button class="edit-skill-btn" id="edit-skill-btn">Edit skill</button></a>
+                      <a href="{% url 'delete_skill' skill.id %}"><button class="delete-skill-btn" id="delete-skill-btn" onclick="return confirmDelete(event)">Delete Skill</button></a>
+                     {% endif %}
+                   </div>
+                  </div>
+                  {% endfor %}
+                  
+                  {% if user.skill_set.all|length > 3 %}
+                  <div class="show-all-skill">
+                    <button class="show-all-skill-btn" id="show-all-skill-link">Show all Skills </button>
+                  </div>
+                  {% endif %}
+
+                  <div class="remaining-skill-list" id="remaining-skill-list" style="display: none;">
+                  {% for skill in skills|slice:"3:" %}
+                  <div class="skill-item">
+                  <a href="{% url 'skillchoice' %}"><h3>{{ skill.skill_name }}</h3></a>
+                      <b>{{ skill.level }}</b>
+                    <hr>
+              {% if user.username == request.user.username %}
+              <a href="{% url 'edit_skill' skill.id %}"><button class="edit-skill-btn" id="edit-skill-btn">Edit Skill</button></a>
+              <a href="{% url 'delete_skill' skill.id %}"><button class="delete-skill-btn" id="delete-skill-btn" onclick="return confirmDelete(event)">Delete Skill</button></a>
+              {% endif %}
+              </div>
+              {% endfor %}
+            </div>
+          </div>
+
+             <div class="profile-discription" id="language-section">
+             <h2>Languages</h2>
+             {% if user.username == request.user.username %}          
+                <button class="add-language-btn" id="add-language-btn">Add Languages</button>
+              {% endif %}
+              <div class="popup" id="language-popup" style="display: none;">
+                 <div class="popup-content">
+                     <img src ="{% static 'image/close.jpg' %}"class="close" alt="close">
+                     <h1>Add Languages</h1>
+                      {% if user.username == request.user.username %}
+                       <form method="post" id="language-form">
+                         {% csrf_token %}
+                         {{ language_form.as_p }}
+                        <button type="submit"name="language_submit">Save language</button>
+                       </form>
+                      {% endif %}
+                   </div>
+                </div>
+
+                {% for language in user.language_set.all%}
+                  <div class="language-btn">
+                    <div>
+
+                      <a href="{% url 'skillchoice' %}"><h3>{{ language.language_name }}</h3></a>
+                      {% if user.username == request.user.username %}
+                          <form method="post"
+                              action="{% url 'delete_language' language.id %}"
+                              style="display:inline;">
+                               {% csrf_token %}
+                             <button class="delete-lan-btn" id="delete-lan-btn"
+                                 onclick="return confirm('Are you sure you want to delete this language?');">
+                                  Delete
+                             </button>
+                           </form>
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% endfor %}
+          
+        </div>
+
+        
+      </div>
+
+            
+        
+        
+        <div class="profile-sidebar">
+
+          <div class="sidebar-ad">
+            <small>ad &middot;&middot;&middot;</small>
+            <p> Master the principle of the web design</p>
+            <div>
+              <img src ="{% static 'image/th.jpg' %}" >
+              <img src ="{% static 'image/th.jpg' %}" >
+    
+            </div>
+            <b>Brand and demand in thiis ad</b>
+            <a href="#" class="ad-link">Learn More</a>
+          </div>
+          
+          <div class="sidebar-pepole">
+            <h3>People may know you</h3>
+            {% for friend in s_friends %}
+          <div class="sidebar-pepole-row">
+          <img src="{{ friend.profiles.profileimg_main.url }}" alt="{{ friend.username|capfirst }} profile picture">
+          <div>
+            <h2>{{friend.username|capfirst}}</h2>
+           <p>{{ friend.about.description }}</p>
+            <a href="{% url 'profile' friend.username %}" class="connect-btn" data-user-id="{{ friend.id }}">Connect</a>
+
+          </div>
+
+        </div>
+           {% empty %}
+             <p>No suggestions at the moment.</p>
+           {% endfor %}
+          </div>
+          
+
+
+
+
+        </div>
+
+
+
+
+
+
+      </div>
+      <div class="profile-footer">
+        <div class="sidebar-useful-links">
+          <a href="#">About</a>
+          <a href="#">Accessibility</a>
+          <a href="#">Held center</a>
+          <a href="#">Privacy Policy</a>
+          <a href="#">ADvertising</a>
+          <a href="#">Get the app</a>
+          <a href="#">Contact us</a>
+  
+          <div class="copyright-msg">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>GOOD &#169;2024.All right reserved</p>
+  
+  
+          </div>
+      </div>
+      </div>
+
+      <script>
+
+        let profileMenu = document.getElementById("profileMenu");
+        function toggleMenu(){
+          profileMenu.classList.toggle("open-menu")
+        }
+      </script>
+      <script>
+        function confirmDelete(event) {
+          if (confirm("Are you sure you want to delete this experience?")) {
+            // User clicked OK, delete the item
+            return true;
+          } else {
+            // User clicked Cancel, prevent default action
+            event.preventDefault();
+            return false;
+          }
+        }                    
+      </script>
+
+      <script>
+        function confirmDelete(event) {
+          if (confirm("Are you sure you want to delete this education?")) {
+            // User clicked OK, delete the item
+            return true;
+          } else {
+            // User clicked Cancel, prevent default action
+            event.preventDefault();
+            return false;
+          }
+        }                    
+      </script>
+      <script> 
+        document.getElementById("connectBtn").addEventListener("click", function() { 
+          window.location.href = "{% url 'people' %}"; 
+        }); 
+      </script>
+
+      <script>
+     function loadConnections(username) {
+  const span = document.getElementById("mutual-connections-text");
+  const showMoreBtn = document.getElementById("show-more-btn");
+  const dropdownMenu = document.getElementById("dropdown-menu");
+
+  span.innerText = "Loading mutual connections...";
+
+  fetch(`/mutual-connections/${username}/`)
+    .then(res => res.json())
+    .then(data => {
+      if (data.count > 0) {
+        // Preview: first 3 usernames as clickable links (skip self)
+        let previewLinks = data.connections.slice(0, 3).map(u => {
+          if (u === username) {
+            return `<span class="preview-link">${u}</span>`; // not clickable
+          }
+          return `<a href="/profile/${u}" class="preview-link" title="View ${u}'s profile">${u}</a>`;
+        }).join(", ");
+
+        span.innerHTML = `<strong>${data.count}</strong> mutual connection${data.count !== 1 ? 's' : ''}: ${previewLinks}`;
+
+        if (data.count > 3) {
+          showMoreBtn.style.display = "inline-block";
+          showMoreBtn.onclick = () => {
+            dropdownMenu.innerHTML = "";
+            data.connections.forEach(u => {
+              const item = document.createElement("div");
+              item.classList.add("dropdown-item");
+
+              if (u === username) {
+                // show but not clickable
+                item.innerHTML = `
+                  <div class="connection-link">
+                    <img src="/media/Profile_images/${u}.jpg" class="profile-img">
+                    <span>${u}</span>
+                  </div>
+                `;
+              } else {
+                // clickable link to profile
+                item.innerHTML = `
+                  <a href="/profile/${u}" class="connection-link" title="View ${u}'s profile">
+                    <img src="/media/Profile_images/${u}.jpg" class="profile-img">
+                    <span>${u}</span>
+                  </a>
+                `;
+              }
+              dropdownMenu.appendChild(item);
+            });
+
+            dropdownMenu.style.display = "block";
+            showMoreBtn.innerText = "Hide options";
+
+            showMoreBtn.onclick = () => {
+              dropdownMenu.style.display = dropdownMenu.style.display === "none" ? "block" : "none";
+              showMoreBtn.innerText = dropdownMenu.style.display === "none" ? "More options" : "Hide options";
+            };
+          };
+        }
+      } else {
+        span.innerText = "No mutual connections yet";
+      }
+    })
+    .catch(err => {
+      console.error("Error fetching mutual connections:", err);
+      span.innerText = "Error loading connections";
+    });
+}
+</script>
+<script>
+  // Open modal when clicking "Contact info"
+document.getElementById("contact-link").addEventListener("click", function(e) {
+  e.preventDefault();
+  document.getElementById("contact-modal").style.display = "block";
+});
+
+// Close modal when clicking the X
+document.getElementById("close-modal").addEventListener("click", function() {
+  document.getElementById("contact-modal").style.display = "none";
+});
+
+// Optional: close modal when clicking outside content
+window.addEventListener("click", function(e) {
+  const modal = document.getElementById("contact-modal");
+  if (e.target === modal) {
+    modal.style.display = "none";
+  }
+});
+
+</script>
+
+<script>
+  // Get user's location and send to backend
+function updateLocation() {
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(function(position) {
+      const lat = position.coords.latitude;
+      const lon = position.coords.longitude;
+
+      // Send to backend via AJAX
+      fetch('/update-location/', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': '{{ csrf_token }}'
+        },
+        body: JSON.stringify({ latitude: lat, longitude: lon })
+      });
+    });
+  } else {
+    alert("Geolocation is not supported by this browser.");
+  }
+}
+
+
+
+
+
+      <script src="{% static 'js/scriptshowalleducation.js' %}"></script>
+      <script src="{% static 'js/scriptaddeducation.js' %}"></script>
+      <script src="{% static 'js/scriptexperience.js' %}"></script>
+      <script src="{% static 'js/scriptediteducation.js' %}"></script>
+      <script src="{% static 'js/scriptaddskills.js' %}"></script>
+      <script src="{% static 'js/scriptfriendreuestuser.js' %}"></script>
+      <script src="{% static 'js/scriptfriendrequest.js' %}"></script>
+      <script src="{% static 'js/scriptprofileimagemainandinner.js' %}"></script>
+      
+     
+     
+
+
+      
+    
+  
+  </body>
+  </html>

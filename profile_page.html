@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{{ profile_user.username }}'s Profile</title>
+</head>
+<body>
+    <h2>{{ profile_user.username }}</h2>
+    <img src="{{ profile_user.profiles.profileimg_main.url }}" alt="Profile Pic" width="120" height="120">
+    <p><strong>Bio:</strong> {{ profile_user.profiles.bio }}</p>
+    <p><strong>Location:</strong> {{ profile_user.profiles.location }}</p>
+    <p><strong>About:</strong> {{ profile_user.profiles.about }}</p>
+
+    <a href="{% url 'chat_messages' profile_user.id %}">Back to Chat</a>
+</body>
+</html>

@@ -1,0 +1,140 @@
+
+
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Post</title>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f3f2ef; margin: 0; padding: 40px; }
+        .create-post-card { width: 600px; margin: auto; background: #fff; border-radius: 12px;
+                            box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 20px; }
+        .create-post-header { display: flex; justify-content: space-between; align-items: center;
+                              border-bottom: 1px solid #ddd; padding-bottom: 10px; margin-bottom: 15px; }
+        .create-post-header h3 { margin: 0; color: #0a66c2; font-size: 18px; }
+        .close { width: 20px; height: 20px; cursor: pointer; }
+        textarea { width: 100%; min-height: 100px; border: none; outline: none; resize: none;
+                   font-size: 14px; padding: 10px; }
+        .create-post-links { display: flex; justify-content: space-around; margin-top: 15px;
+                             border-top: 1px solid #eee; padding-top: 10px; }
+        .create-post-links button { background: none; border: none; cursor: pointer; font-size: 14px;
+                                    display: flex; align-items: center; gap: 6px; color: #555; }
+        .create-post-links button:hover { color: #0a66c2; }
+        .preview { margin-top: 10px; }
+        .preview img, .preview video { max-width: 100%; border-radius: 8px; margin-top: 10px; }
+        .create-post-footer { text-align: right; margin-top: 15px; }
+        .create-post-footer button {
+            background: #0a66c2; color: #fff; border: none; padding: 10px 18px;
+            border-radius: 20px; cursor: pointer; font-weight: bold;
+        }
+        .create-post-footer button:hover { background: #004182; }
+    </style>
+</head>
+<body>
+    <div class="create-post-card">
+        <div class="create-post-header">
+            <h3>Create a Post</h3>
+            <img src="{% static 'image/close.png' %}" class="close" alt="Close">
+        </div>
+
+        <form id="postForm" method="post" enctype="multipart/form-data" action="{% url 'write_post' %}">
+            {% csrf_token %}
+            <textarea id="post-text" name="post-text" placeholder="What do you want to talk about?"></textarea>
+
+            <!-- Media preview -->
+            <div class="preview" id="preview"></div>
+
+            <div class="create-post-links">
+                <button type="button" id="image-post-btn">
+                    <img src="{% static 'image/image-icon-png-3.png' %}" width="20"> Image
+                </button>
+                <button type="button" id="video-post-btn">
+                    <img src="{% static 'image/video-icon.png' %}" width="20"> Video
+                </button>
+                <button type="button" id="article-post-btn">
+                    <img src="{% static 'image/events-and-festival-collection-icons-set-vector-2GXD3N9.jpg' %}" width="20"> Article
+                </button>
+            </div>
+
+            <!-- Hidden inputs for file uploads -->
+            <input type="file" id="imageInput" name="image" accept="image/*" style="display:none;">
+            <input type="file" id="videoInput" name="video" accept="video/*" style="display:none;">
+
+            <div class="create-post-footer">
+                <button type="submit">Post</button>
+            </div>
+        </form>
+    </div>
+
+    <script>
+        // Close button
+        document.querySelector('.close').addEventListener('click', () => window.history.back());
+
+        // Image upload
+        document.getElementById("image-post-btn").onclick = () => document.getElementById("imageInput").click();
+        document.getElementById("imageInput").onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById("preview").innerHTML += `<img src="${URL.createObjectURL(file)}" alt="Preview">`;
+            }
+        };
+
+        // Video upload
+        document.getElementById("video-post-btn").onclick = () => document.getElementById("videoInput").click();
+        document.getElementById("videoInput").onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById("preview").innerHTML += `<video controls src="${URL.createObjectURL(file)}"></video>`;
+            }
+        };
+
+        // Article option (redirect)
+        document.getElementById("article-post-btn").onclick = () => {
+            window.location.href = "{% url 'create_postarticle' %}?post_type=article";
+        };
+
+        // CSRF helper
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                const cookies = document.cookie.split(';');
+                for (let cookie of cookies) {
+                    cookie = cookie.trim();
+                    if (cookie.startsWith(name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        }
+        const csrftoken = getCookie('csrftoken');
+
+        // AJAX form submission
+        document.getElementById("postForm").addEventListener("submit", function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+
+            fetch("{% url 'write_post' %}", {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-CSRFToken": csrftoken,
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success) {
+                    alert("Post created successfully!");
+                    this.reset();
+                    document.getElementById("preview").innerHTML = "";
+                } else {
+                    alert("Error: " + data.error);
+                }
+            })
+            .catch(err => console.error("Error:", err));
+        });
+    </script>
+</body>
+</html>

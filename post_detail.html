@@ -1,0 +1,47 @@
+{% load static %}
+<div class="comment-box" style="display: none;">
+  <form  method="post" id="comment-form" >
+    {% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="post_id" value="{{ post.id }}">
+  <a><img src="{{user_profile.profileimg.url}}"></a>
+  <textarea rows="2" placeholder="write a comment"></textarea>
+  <button id="submit-comment-btn" onclick="submitComment(this)"><img src="{% static 'image/comment.submit.jpg' %}"></button>
+  </form>
+</div> 
+  <div class="comments-container">
+    <ul id="comments-list"> 
+    {% for comment in post.comment_set.all %}
+    <li>
+    <img src="{{ comment.user.profileimg.url }}">
+    <span>{{ comment.user.username }}:</span>
+    <p>{{ comment.comment }}</p>
+    <div class="comment-actions">
+      <button class="like-btn" data-comment-id="{{ comment.id }}">Like ({{ comment.likes.count }})</button>
+      <button class="reply-btn" data-comment-id="{{ comment.id }}">Reply</button>
+   </div>
+   <div class="replies-container" style="display: none;">
+    <ul>
+      {%   for reply in comment.replies.all %}
+        <li>
+          <img src="{{ reply.user.profileimg.url }}">
+          <span>{{ reply.user.username }}:</span>
+          <p>{{ reply.comment }}</p>
+          <div class="comment-actions">
+            <button class="like-btn" data-comment-id="{{ reply.id }}">Like ({{ reply.likes.count }})</button>
+          </div>
+        </li>
+        {% endfor %}
+      </ul>
+      <form method="post" class="reply-form" action=".">
+        {% csrf_token %}
+        { reply_form.as_p }
+        <input type="hidden" name="comment_id" value="{{ comment.id }}">
+        <textarea rows="2" placeholder="Write a reply"></textarea>
+        <button class="submit-reply-btn">Submit</button>
+      </form>
+    </div>  
+    </li>
+    {% endfor %}
+    </ul>
+  </div>

@@ -1,0 +1,21 @@
+{% load static %}
+
+
+<div class ="popup" id="popup" style="display:flex;">
+  <div class="popup-content">
+     <img src ="{% static 'image/close.png' %}" class="close" alt="Close">
+     <h1>Edit Skill</h1>
+      <form method="post">
+       {% csrf_token %}
+       {{ form.as_p }}
+       <button type="submit">Save Skill</button>
+      </form>
+  </div>
+</div>
+
+<link rel="stylesheet"  href="{% static 'css/add_education.css' %}">
+<script>
+  document.querySelector('.close').addEventListener('click', function() {
+    window.history.back();
+  });
+</script>

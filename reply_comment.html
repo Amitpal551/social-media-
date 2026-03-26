@@ -1,0 +1,6 @@
+<h2>Reply to {{ comment.text }}</h2>
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Reply</button>
+</form>

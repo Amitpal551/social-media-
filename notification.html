@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Notifications</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f9;
+            margin: 0;
+            padding: 0;
+        }
+
+        header {
+            background: #4a90e2;
+            color: white;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .container {
+            max-width: 600px;
+            margin: 2rem auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            padding: 1.5rem;
+        }
+
+        h2 {
+            margin-top: 0;
+            color: #333;
+        }
+
+        ul.notifications {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        ul.notifications li {
+            background: #f9f9f9;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.75rem;
+            transition: background 0.3s ease;
+        }
+
+        ul.notifications li:hover {
+            background: #eef6ff;
+        }
+
+        .empty {
+            color: #888;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <h1>🔔 Notifications</h1>
+    </header>
+
+    <div class="container">
+        <h2>Latest Updates</h2>
+        <ul class="notifications" id="notifications">
+            <li class="empty">No notifications yet...</li>
+        </ul>
+    </div>
+
+    <script>
+       const socket = new WebSocket(`ws://${window.location.host}/ws/notifications/`);
+
+socket.onopen = function() {
+    console.log("WebSocket connected!");
+};
+
+socket.onmessage = function(event) {
+    const data = JSON.parse(event.data);
+    console.log("Notification:", data.message);
+
+    const emptyItem = document.querySelector(".empty");
+    if (emptyItem) emptyItem.remove();
+
+    const li = document.createElement("li");
+    li.textContent = data.message;
+    document.getElementById("notifications").prepend(li);
+};
+
+socket.onerror = function(error) {
+    console.error("WebSocket error:", error);
+};
+
+socket.onclose = function() {
+    console.log("WebSocket closed");
+};
+
+    </script>
+</body>
+</html>

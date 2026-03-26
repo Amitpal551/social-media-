@@ -1,0 +1,5 @@
+{% for message in messages %}
+    <p>{{ message.sender.username }}: {{ message.message }}</p>
+    <a href="{% url 'view_message' message.id %}">View</a>
+{% endfor %}
+

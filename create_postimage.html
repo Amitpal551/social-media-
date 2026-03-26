@@ -1,0 +1,124 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Create Image Post</title>
+  <style>
+    body {
+      background: #f4f6f9;
+      font-family: 'Segoe UI', sans-serif;
+    }
+    .post-card {
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .post-card h2 {
+      margin-bottom: 15px;
+      text-align: center;
+      color: #0078d7;
+    }
+    label {
+      display: block;
+      margin: 10px 0 6px;
+      font-weight: bold;
+      color: #333;
+    }
+    input[type="file"],
+    textarea {
+      width: 100%;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      transition: border-color 0.3s;
+    }
+    input[type="file"]:focus,
+    textarea:focus {
+      border-color: #0078d7;
+      outline: none;
+    }
+    button {
+      background: #0078d7;
+      color: #fff;
+      border: none;
+      padding: 12px 20px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 16px;
+      transition: background 0.3s;
+      width: 100%;
+    }
+    button:hover {
+      background: #005fa3;
+    }
+    .preview {
+      margin-top: 10px;
+      text-align: center;
+    }
+    .preview img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 10px;
+    }
+    .close {
+      width: 24px;
+      height: 24px;
+      cursor: pointer;
+      float: right;
+      margin-top: -10px;
+    }
+  </style>
+</head>
+<body>
+  <div class="post-card">
+    <img src="{% static 'image/close.jpg' %}" class="close" alt="close">
+    <h2>Create Image Post</h2>
+    <form id="postForm" method="post" enctype="multipart/form-data">
+      {% csrf_token %}
+      <input type="hidden" name="post_type" value="image">
+      
+      <label for="image">Select Image:</label>
+      <input type="file" name="image" id="image" required>
+      
+      <div class="preview" id="preview"></div>
+      
+      <label for="caption">Write Caption:</label>
+      <textarea name="caption" id="caption" required></textarea>
+      
+      <button type="submit">Create Post</button>
+    </form>
+  </div>
+
+  <script>
+    // Close button
+    document.querySelector('.close').addEventListener('click', function() {
+      window.history.back();
+    });
+
+    // Live image preview
+    document.getElementById('image').addEventListener('change', function() {
+      const preview = document.getElementById('preview');
+      preview.innerHTML = "";
+      const file = this.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = function(e) {
+          const img = document.createElement('img');
+          img.src = e.target.result;
+          preview.appendChild(img);
+        }
+        reader.readAsDataURL(file);
+      }
+    });
+    // No AJAX here — normal form submit will redirect to base.html
+  </script>
+</body>
+</html>
+
+
+

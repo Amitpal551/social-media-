@@ -1,0 +1,20 @@
+<html>
+    <head>
+    </head>
+    <body>
+        <div class="alert alert-success">
+            <strong>Success!</strong> You should <a href="{% url 'logout' %}" class="alert-link">read this message</a>
+
+            {% if messages %}
+            {{ message.tags }}
+    
+            <div>
+                {% for message in messages %}
+                {{message}}
+                {% endfor %}
+            </div>
+    
+            {% endif %}
+          </div>
+    </body>
+    </html>

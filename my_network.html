@@ -1,0 +1,45 @@
+<div id="requests">
+  {% for req in requests %}
+    {% if req.status == "pending" %}
+      <div class="request" id="req-{{ req.id }}">
+        <p>{{ req.from_user.username|capfirst }} wants to connect</p>
+        <button onclick="handleRequest({{ req.id }}, 'accept')">Accept</button>
+        <button onclick="handleRequest({{ req.id }}, 'reject')">Reject</button>
+      </div>
+    {% endif %}
+  {% endfor %}
+</div>
+
+<script>
+function handleRequest(requestId, action) {
+    const url = `/friend-request/${requestId}/${action}/`;
+    fetch(url, {
+        method: "POST",
+        headers: {
+            "X-CSRFToken": getCookie("csrftoken"),
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            const reqDiv = document.getElementById(`req-${requestId}`);
+            reqDiv.innerHTML = `<p>Request ${data.status}</p>`;
+        }
+    });
+}
+
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+</script>

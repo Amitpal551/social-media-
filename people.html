@@ -1,0 +1,99 @@
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/people.css' %}">
+
+<h3>CONNECT</h3>
+{% for friend in s_friends %}
+<div class="sidebar-pepole-row">
+    <img src="{{ friend.profiles.profileimg.url }}" alt="{{ friend.username }} profile picture">
+    <div>
+        <h2>{{ friend.username }}</h2>
+        <p>{{ friend.about.description }}</p>
+        <button class="connectbtn" data-user-id="{{ friend.id }}">Connect</button>
+    </div>
+</div>
+{% empty %}
+<p>No suggestions at the moment.</p>
+{% endfor %}
+
+<h3>Total Connections: <span id="connection-count">{{ count }}</span></h3>
+
+<ul class="connections-list">
+    {% for u in connected_users %}
+    <li class="connection-item">
+        <a href="{% url 'profile' u.username|capfirst %}">
+            <img src="{{ u.profiles.profileimg_main.url }}" alt="{{ u.username }} profile picture" class="connection-img">
+        </a>
+        <a href="{% url 'profile' u.username|capfirst %}" class="connection-name">{{ u.username|capfirst }}</a>
+    </li>
+    {% empty %}
+    <li>No connections yet.</li>
+    {% endfor %}
+</ul>
+
+<script>
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+        const cookies = document.cookie.split(";");
+        for (let cookie of cookies) {
+            cookie = cookie.trim();
+            if (cookie.startsWith(name + "=")) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    const csrftoken = getCookie("csrftoken");
+
+    document.querySelectorAll(".connectbtn").forEach(btn => {
+        btn.addEventListener("click", function(e) {
+            e.preventDefault();
+            let receiverId = this.getAttribute("data-user-id");
+
+            fetch("{% url 'send_friend_request' %}", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    "X-CSRFToken": csrftoken
+                },
+                body: JSON.stringify({ receiver_id: receiverId })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    this.innerText = "Request Sent";
+                    this.classList.add("disabled");
+                    // ✅ Update connection count instantly
+                    updateConnectionCount();
+                } else {
+                    alert(data.error || "Error sending request");
+                }
+            })
+            .catch(err => console.error("Fetch error:", err));
+        });
+    });
+});
+</script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const countSpan = document.getElementById("connection-count");
+
+    window.updateConnectionCount = function() {
+        fetch("{% url 'connection_count_api' %}")
+            .then(response => response.json())
+            .then(data => {
+                countSpan.innerText = data.count;
+            })
+            .catch(err => console.error("Error fetching connection count:", err));
+    };
+
+    // Run once on page load
+    updateConnectionCount();
+});
+</script>

@@ -1,0 +1,452 @@
+{% load static %}
+{% load social_share %}
+{% load humanize %}
+
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>social media website</title>
+    <link rel="stylesheet"  href="{% static 'css/base.css' %}">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>
+   
+  </head>
+  <body>
+
+    <nav class="navbar">
+      <div class="navbar-left">
+        <a href="{% url 'profile' request.user.username %}" class="logo"><img src="{{user_profile.profileimg_main.url}}" class="profile-pic-logo" data-profile-img></a>
+        <div class="search-box">
+          <img src="{% static 'image/th.jpg' %}">
+          <input type="text" placeholder="search">
+        </div>
+
+      </div>
+      
+      <div class="navbar-center">
+    
+        <ul>
+        <li><a href="#" class="active-link"><img src ="{% static 'image/th.jpg' %}" ><span> HOME</span></a></li>
+        <li><a href="{% url 'my_network' %}"><img src ="{% static 'image/th.jpg' %}" ><span> MY NETWORK</span></a></li>
+        <li><a href="#"><img src ="{% static 'image/th.jpg' %}" ><span> JOBS</span></a></li>
+        <li><a href="{% url 'user_list' %}"><img src ="{% static 'image/th.jpg' %}" ><span> MESSAGING</span></a></li>
+        <li><a href="{% url 'notification' %}"><img src ="{% static 'image/th.jpg' %}" ><span> NOTIFICATION</span></a></li>
+        </ul>
+
+      </div>
+      <div class="navbar-right">
+        <div class="online">
+          <img src="{{user_profile.profileimg_main.url}}" class="nav-profile-img" class="profile-pic-online" data-profile-img onclick="toggleMenu()">
+        </div>
+
+      </div>
+
+      <div class="profile-menu-wrap" id="profileMenu">
+        <div class="profile-menu">
+          <div class="user-info">
+            <a href="{% url 'profile' request.user.username %}"><img src="{{user_profile.profileimg_main.url}}" class="profile-pic-toggle" data-profile-img></a>
+            <div>
+              <h3>{{user.username}}</h3>
+              <a href="{% url 'profile' request.user.username %}"> See your profile</a>
+            </div>
+          </div>
+          <hr>
+         {% if user.username == request.user.username %}
+          <a href="{% url 'profile_settings' %}" class="profile-menu-link">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>Settings and privacy</p>
+            <span></span>
+          </a>
+          {% endif %}
+          <a href="#" class="profile-menu-link">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>Help and support</p>
+            <span></span>
+
+          </a>
+          <a href="#" class="profile-menu-link">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>Display and accessibility</p>
+            <span></span>
+          </a>
+          <a href="{% url 'logout' %}" class="profile-menu-link">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>logout</p>
+            <span></span>
+          </a>
+          <a href="{% url 'signup' %}" class="profile-menu-link">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>signup</p>
+            <span></span>
+          </a>
+          <a href="{% url 'login' %}" class="profile-menu-link">
+            <img src ="{% static 'image/th.jpg' %}" >
+            <p>login</p>
+            <span></span>
+          </a>
+
+
+        </div>
+      </div>
+     
+    </nav>
+
+    <div class="container">
+      <!-------left-sidebar------>
+      <div class="left-sidebar">
+        <div class="sidebar-profile-box">
+          <a href="{% url 'profile' request.user.username %}"><img src="{{user_profile.profileimg_main.url}}" class="profile-pic-main" data-profile-img width=100%></a>
+          <div class="sidebar-profile-info">
+            <a href="{% url 'profile' request.user.username %}"><img src="{{user_profile.profileimg_inner.url}}" class="profile-pic-sidebar" data-profile-img></a>
+            <h1>{{user.username|capfirst}}</h1>
+            <h3>thank you</h3>
+            <ul>
+              <li>your profile views <span>52</span></li>
+              <li>your post views <span>250</span></li>
+              <li>your connection <span id="connection-count">{{ count }}</span></li>
+            </ul>
+          
+      </div>
+      <div class="sidebar-profile-link">
+        <a href="#"> <img src ="{% static 'image/th.jpg' %}">my items</a>
+        <a href="#"> <img src ="{% static 'image/th.jpg' %}">try premiun</a>
+      </div>
+    </div>
+
+    <div class="sidebar-activity" id="sidebaractivity">
+      <h3>RECENT</h3>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">web developement</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">user interface</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">online learning</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">learn online</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">code better</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">group learning</a>
+      <h3>GROUPS</h3>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">web design groups</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">html and css</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">python and javascript</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">learn coding online</a>
+      <h3>HASHIAG</h3>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">web developement</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">userinterface</a>
+      <a href="#"><img src ="{% static 'image/th.jpg' %}">online learning</a>
+      <div class="discover-more-link">
+        <a href="#">Discover more</a>
+      </div>
+    </div>
+    <p id="showMoreLink" onclick="toggleActivity()">Show more<b>.</b></P>
+  </div>
+<!-------------------------------------------------------------------------------------------------->
+
+
+    <div class="main-content">
+      <div class="create-post">
+          <div class="create-post-input"> 
+            <img src="{{user_profile.profileimg_main.url}}" class="profile-pic-use" data-profile-img  alt="Profile"> 
+            <a href="{% url 'write_post' %}">
+            <textarea rows="2" placeholder="write a post"></textarea></a>
+          </div>
+            
+        <div class="create-post-links">
+          <li><a href="{% url 'create_postimage' %}?post_type=image"><button  id="image-post-btn"><img src="{% static 'image/image-icon-png-3.png' %}"></button></a></li>
+          <li><a href="{% url 'create_postvideo' %}?post_type=video"><button  id="video-post-btn"><img src="{% static 'image/video-icon.png' %}"></button></a></li>
+          <li><a href="{% url 'create_postarticle' %}?post_type=article"><button  id="article-post-btn"><img src="{% static 'image/events-and-festival-collection-icons-set-vector-2GXD3N9.jpg' %}"></button></a></li>
+          
+        </div>
+      </div>
+      <div class="sort-by">
+        <hr>
+        <p>sort by:<span>top <img src="{% static 'image/th.jpg' %}"></span></p>
+      </div>
+      {% for post in posts %}
+      <div class="post">
+        <div class="post-author">
+         <a href="{% url 'profile' post.user.username|capfirst %}"><img src="{{post.user.profiles.profileimg_main.url}}" alt="User Image"></a>
+          <div>
+            <a href="{% url 'profile' post.user.username %}"><h1>{{post.user.username|capfirst}}</h1></a>
+            <small>{{post.caption}}</small>
+            <small>{{post.created_at}}</small>
+          </div>
+          <div class="post-card">
+          {% if user.username == request.user.username %}
+          <div class="dropdown">
+            <button type="button" class="three-dots-btn">
+                <img src="{% static 'image/three-dots delete.png' %}"  alt="Options">
+            </button>
+            <div class="dropdown-menu">
+              <a href="{% url 'write_post' %}">Create</a>
+              <a href="{% url 'save_post' post.id %}">Save</a>
+              <form action="{% url 'delete_post' post.id %}" method="post" style="display:inline;">
+                {% csrf_token %}
+                {% if user.username == request.user.username %}
+                <button type="submit" onclick="return confirm('Delete this post?')">Delete</button>
+              </form>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+          {% endif %}
+            
+        </div>
+
+        <div class="upload-post">
+      
+        {% if post.post_type == "image" and post.image %}               
+            <img src="{{ post.image.url }}" alt="Post image">
+        {% elif post.post_type == "video" and post.video %}
+             <video controls>
+             <source src="{{post.video.url}}" type="video/mp4">
+             </video>
+             
+        {% elif post.post_type == "article" %}
+          <div class="article-post">
+            {% if post.article_image %}
+              <img src="{{ post.article_image.url }}" alt="Article image">
+              {% endif %}
+
+              <h3>{{ post.article_title }}</h3> 
+              <p>{{ post.article_body }}</p>
+
+              {% if post.caption %}
+              <p><em>{{ post.caption }}</em></p>
+              {% endif %}
+              <p><strong>Published:</strong> {{ post.created_at|date:"M d, Y H:i" }} ({{ post.created_at|naturaltime }})</p>
+
+          </div>
+         {% endif %}
+        </div>
+      
+
+        <div class="post-stats">
+          {% regroup post.reaction_set.all by emoji as reactions %}
+          {% for reaction in reactions|slice:":3" %}
+          <img src="{% static 'image/' %}{{ reaction.grouper }}.jpg" class="chosen-emoji">
+          {% endfor %}
+          
+         
+          <div>
+            <span class="liked-users">
+              {% if post.like_set.count > 0 %}
+              {{ post.like_set.first.user.username }}
+              {% if post.like_set.count > 1 %} and
+              {{ post.like_set.count|add:-1 }} others
+              {% endif %}
+              {% endif %}          
+            </span>
+          </div>
+          <div>
+            <span>{{ post.comment_set.count }}Comment  &middot; {{ post.share_set.count }}Share </span>
+          </div>
+        </div>
+        <div class="post-activity">
+          <div>
+            <img src="{{post.user.profile.profileimg_main.url}}" class="post-activity-user-icon">
+          </div>
+          <div class="post-activity-link">
+            {% csrf_token %}    
+              <button id="like" name="post_id" value="{{post.id}}" class="like-button">
+              <img src="{% static 'image/like-icon-vector-illustration.jpg' %}"> 
+              </button>
+           
+            <div class="emoji-container">
+            <div class="emoji" data-post-id ="{{post.id}}" data-emoji ="like">
+              <img src="{% static 'image/like.jpg' %}">
+              <p>Like</p>
+            </div>
+            <div class="emoji" data-post-id ="{{post.id}}" data-emoji ="love">
+              <img src="{% static 'image/love.jpg' %}">
+              <p>Love</p>
+            </div>
+            <div class="emoji" data-post-id ="{{post.id}}" data-emoji ="sad">
+              <img src="{% static 'image/sad.jpg' %}">
+              <p>Sad</p>
+            </div>
+            <div class="emoji" data-post-id ="{{post.id}}" data-emoji ="smile">
+              <img src="{% static 'image/smile.jpg' %}">
+              <p>smile</p>
+            </div>
+            <div class="emoji" data-post-id ="{{post.id}}" data-emoji ="Clebrate">
+              <img src="{% static 'image/clap-emoji--emoticon-vector.jpg' %}">
+              <p>Clebrate</p>              
+            </div>
+          </div>
+          </div>
+
+          <div class="post-activity-link">
+            <a href="#">
+            <img src="{% static 'image/comment icon.jpg' %}">
+            </a>
+          </div>
+          
+          <div class="post-activity-link">
+            <button class="share-btn"><img src="{% static 'image/share-icon-qvb.png' %}"></button> 
+            <div class="share-links" style="display:none;">
+              <a href="#" class="facebook-share">Facebook</a>
+              <a href="#" class="whatsapp-share">WhatsApp</a>
+              <a href="#" class="linkedin-share">LinkedIn</a>
+              <a href="#" class="twitter-share">Twitter</a>          
+            </div>       
+          </div>                 
+        </div>
+
+      </div>
+      {% endfor %}
+  </div>
+  
+<!--------right-sidebar------>
+      <div class="right-sidebar">
+        <div class="sidebar-news">
+          <img src ="{% static 'image/th.jpg' %}" class="info-item">
+          <h3>TRENDING NEWS</h3>
+          <a href="#">high demand by skilled manpower</a>
+          <span>1d ago and middot;10,934 readers</span>
+
+          <a href="#">Careers growing horizontaliy too</a>
+          <span>18h ago and middot;15,220 readers</span>
+
+          <a href="#">Less work visa for USA,more for UK</a>
+          <span>25h ago and middot;10,256 readers</span>
+
+          <a href="#">More hiring - higher confidence</a>
+          <span>3m ago and middot;10,896 readers</span>
+
+          <a href="#" class="read-more-link">Read More</a>
+        </div>
+    
+        <div class="sidebar-ad">
+             <small>ad &middot; &middot; &middot;</small>
+            <p> Master the principle of the web design</p>
+            <div>
+                <img src ="{% static 'image/th.jpg' %}" >
+                <img src ="{% static 'image/th.jpg' %}" >
+            </div>
+            <b>Brand and demand in thiis ad</b>
+            <a href="#" class="ad-link">Learn More</a>
+        </div>
+
+        <div class="sidebar-useful-links">
+            <a href="#">About</a>
+            <a href="#">Accessibility</a>
+            <a href="#">Held center</a>
+            <a href="#">Privacy Policy</a>
+            <a href="#">ADvertising</a>
+            <a href="#">Get the app</a>
+            <a href="#">Contac us</a>
+
+            <div class="copyright-msg">
+                <img src ="{% static 'image/th.jpg' %}">
+                <p>GOOD &#169;2024.All right reserved</p>
+            </div>
+          </div>
+      </div>
+    </div>
+
+    
+  
+    <script>
+
+      let profileMenu = document.getElementById("profileMenu");
+      function toggleMenu(){
+        profileMenu.classList.toggle("open-menu")
+      }
+    </script>
+
+
+    <script>
+
+
+      let sideactivity =  document.getElementById("sidebaractivity");
+      let moreLink =  document.getElementById("showMoreLink");
+
+      function toggleActivity(){
+        sideactivity.classList.toggle("open-activity");
+
+        if ( sideactivity.classList.contains("open-activity")){
+          moreLink.innerHTML = "Show less <b>-</b>";
+        }
+        else{
+        moreLink.innerHTML = "Show more <b>+</b>";
+        }
+      
+      }
+    </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+    const countSpan = document.getElementById("connection-count");
+
+    function updateConnectionCount() {
+        fetch("{% url 'connection_count_api' %}")
+            .then(response => response.json())
+            .then(data => {
+                countSpan.innerText = data.count;
+            })
+            .catch(err => console.error("Error fetching connection count:", err));
+    }
+
+    // Update immediately when page loads
+    updateConnectionCount();
+
+    // Expose function globally so other scripts can call it
+    window.updateConnectionCount = updateConnectionCount;
+});
+</script>
+
+<script>
+  //
+document.addEventListener("DOMContentLoaded", function() {
+  const btns = document.querySelectorAll(".three-dots-btn");
+
+  btns.forEach(btn => {
+    btn.addEventListener("click", function(e) {
+      e.preventDefault();
+      const menu = this.nextElementSibling;
+      menu.style.display = menu.style.display === "block" ? "none" : "block";
+    });
+  });
+
+  // Close dropdown if clicked outside
+  document.addEventListener("click", function(e) {
+    document.querySelectorAll(".dropdown-menu").forEach(menu => {
+      if (!menu.previousElementSibling.contains(e.target) && !menu.contains(e.target)) {
+        menu.style.display = "none";
+      }
+    });
+  });
+});
+</script>
+
+
+
+
+    <script src="{% static 'js/scriptimage.js' %}"></script>
+    <script src="{% static 'js/scriptupload.js' %}"></script>
+    <script src="{% static 'js/scriptreversepost.js' %}"></script>
+    <script>var staticUrl = "{% static '' %}";</script>
+    <script src="{% static 'js/scriptlikepost.js' %}"></script>
+    <script src="{% static 'js/scriptcomment.js' %}"></script>
+    <script src="{% static 'js/scriptshare.js' %}"></script>
+    <script src="{% static 'js/scriptprofileimagemainandinner.js' %}"></script>
+  
+    
+
+  
+  
+    
+    
+    
+    
+
+
+    
+  
+
+
+
+
+
+  </body>
+</html>

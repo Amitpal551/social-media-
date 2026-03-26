@@ -1,0 +1,110 @@
+
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Create Article Post</title>
+    <script src="{% static 'js/post.js' %}" defer></script>
+</head>
+<body>
+    <div class="form-container">
+        <h2>Create an Article</h2>
+        <form method="post" enctype="multipart/form-data" id="articleForm">
+            {% csrf_token %}
+            
+            <label for="id_article_title">Title:</label>
+            {{ form.article_title }}
+
+            <label for="id_article_body">Body:</label>
+            {{ form.article_body }}
+
+            <label for="id_article_image">Image (optional):</label>
+            {{ form.article_image }}
+
+            <label for="id_caption">Caption:</label>
+            {{ form.caption }}
+
+            <button type="submit" class="btn-submit">Publish Article</button>
+        </form>
+    </div>
+</body>
+</html>
+
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+.form-container {
+    max-width: 700px;
+    margin: 40px auto;
+    padding: 25px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-top: 15px;
+    font-weight: bold;
+    color: #444;
+}
+
+input, textarea {
+    width: 100%;
+    padding: 10px;
+    margin-top: 6px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 14px;
+}
+
+textarea {
+    min-height: 150px;
+    resize: vertical;
+}
+
+.btn-submit {
+    margin-top: 20px;
+    padding: 12px 20px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.btn-submit:hover {
+    background: #0056b3;
+}
+
+</style>
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const form = document.getElementById("articleForm");
+    const titleField = document.getElementById("id_article_title");
+    const bodyField = document.getElementById("id_article_body");
+
+    form.addEventListener("submit", function(event) {
+        if (!titleField.value.trim() || !bodyField.value.trim()) {
+            alert("Please fill in both Title and Body before publishing.");
+            event.preventDefault();
+        }
+    });
+});
+
+</script>

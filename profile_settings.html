@@ -1,0 +1,92 @@
+
+
+<h2>Profile Settings</h2>
+<form method="post">
+  {% csrf_token %}
+  
+  <fieldset>
+    <legend>Contact Info</legend>
+    {{ profile_form.as_p }}
+  </fieldset>
+
+  <fieldset>
+    <legend>About</legend>
+    {{ about_form.as_p }}
+  </fieldset>
+
+  <button type="submit">Save Settings</button>
+</form>
+
+<style>
+/* General container */
+form {
+    max-width: 600px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    font-family: "Segoe UI", Arial, sans-serif;
+}
+
+/* Headings */
+h2 {
+    text-align: center;
+    color: #045be6;
+    margin-bottom: 20px;
+    font-weight: 600;
+}
+
+/* Fieldsets */
+fieldset {
+    border: 1px solid #ddd;
+    border-radius: 6px;
+    padding: 15px 20px;
+    margin-bottom: 20px;
+    background: #fff;
+}
+
+legend {
+    font-weight: 600;
+    color: #333;
+    padding: 0 8px;
+}
+
+/* Form fields */
+form p {
+    margin: 10px 0;
+}
+
+form input, form textarea, form select {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    font-size: 14px;
+    transition: border-color 0.2s ease;
+}
+
+form input:focus, form textarea:focus, form select:focus {
+    border-color: #045be6;
+    outline: none;
+}
+
+/* Submit button */
+button[type="submit"] {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    background: #045be6;
+    color: #fff;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+button[type="submit"]:hover {
+    background: #023e8a;
+}
+</style>
+

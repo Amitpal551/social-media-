@@ -1,0 +1,253 @@
+
+
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chat</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', sans-serif;
+            background: var(--chat-bg, #f0f2f5);
+            margin: 0;
+            padding: 0;
+        }
+
+        #chatContainer {
+            width: 420px;
+            margin: 40px auto;
+            background: #fff;
+            border-radius: 15px;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.15);
+            display: flex;
+            flex-direction: column;
+            height: 650px;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Header */
+        #chatHeader {
+            background: #075E54;
+            color: #fff;
+            padding: 12px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top-left-radius: 15px;
+            border-top-right-radius: 15px;
+        }
+
+        #chatHeader a {
+            display: flex;
+            align-items: center;
+            text-decoration: none;
+            color: white;
+        }
+
+        #chatHeader img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 12px;
+            border: 2px solid #fff;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+
+        #chatHeader img:hover {
+            transform: scale(1.1);
+        }
+
+        .username {
+            font-weight: bold;
+            font-size: 16px;
+        }
+
+        /* Chat box */
+        #chatBox {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: var(--chat-box-bg, #e5ddd5);
+        }
+
+        .bubble {
+            padding: 10px 15px;
+            margin: 10px;
+            border-radius: 20px;
+            max-width: 70%;
+            clear: both;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            font-size: 14px;
+            position: relative;
+        }
+
+        .sent {
+            background-color: var(--sent-bubble, #dcf8c6);
+            float: right;
+        }
+
+        .received {
+            background-color: var(--received-bubble, #fff);
+            float: left;
+        }
+
+        .meta {
+            font-size: 11px;
+            color: #777;
+            margin-top: 5px;
+            text-align: right;
+        }
+
+        .time {
+            margin-right: 5px;
+        }
+
+        .tick {
+            font-size: 12px;
+            color: #555;
+        }
+
+        .tick.seen {
+            color: #34B7F1; /* WhatsApp blue */
+        }
+
+        /* Input */
+        #chatInputContainer {
+            display: flex;
+            padding: 12px;
+            border-top: 1px solid #ccc;
+            background: #fafafa;
+        }
+
+        #chatInput {
+            flex: 1;
+            padding: 12px;
+            border-radius: 25px;
+            border: 1px solid #ccc;
+            outline: none;
+            font-size: 14px;
+        }
+
+        #sendBtn {
+            margin-left: 10px;
+            padding: 12px 16px;
+            background: #25D366;
+            border: none;
+            border-radius: 50%;
+            color: #fff;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+
+        #sendBtn:hover {
+            background: #128C7E;
+        }
+
+        /* Settings Panel */
+        #settingsPanel {
+            display: none;
+            position: absolute;
+            top: 60px;
+            right: 20px;
+            background: #fff;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            padding: 15px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            z-index: 100;
+        }
+
+        #settingsPanel label {
+            display: block;
+            margin: 8px 0 4px;
+            font-size: 13px;
+            font-weight: bold;
+        }
+
+        #settingsBtn {
+            background: #128C7E;
+            border: none;
+            color: #fff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="chatContainer">
+        <!-- Header with profile link -->
+        <div id="chatHeader">
+            <a href="{% url 'profile' chat_user.username|capfirst %}">
+                <img src="{{ chat_user.profiles.profileimg_main.url }}" alt="Profile Pic">
+                <div class="username">{{ chat_user.username|capfirst }}</div>
+            </a>
+            <button id="settingsBtn">⚙️ Settings</button>
+        </div>
+
+        <!-- Chat messages -->
+        <div id="chatBox">
+            {% for msg in messages %}
+                <div class="bubble {% if msg.sender == request.user %}sent{% else %}received{% endif %}">
+                    {{ msg.content }}
+                    <div class="meta">
+                        <span class="time">{{ msg.timestamp|date:"H:i" }}</span>
+                        {% if msg.sender == request.user %}
+                            {% if msg.status == "sent" %}
+                                <span class="tick">✓</span>
+                            {% elif msg.status == "delivered" %}
+                                <span class="tick">✓✓</span>
+                            {% elif msg.status == "seen" %}
+                                <span class="tick seen">✓✓</span>
+                            {% endif %}
+                        {% endif %}
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+
+        <!-- Input -->
+        <form method="post" action="{% url 'send_message' user_id %}" id="chatInputContainer">
+            {% csrf_token %}
+            <input type="text" name="text" id="chatInput" placeholder="Type a message...">
+            <button type="submit" id="sendBtn">➤</button>
+        </form>
+    </div>
+
+    <!-- Settings Panel -->
+    <div id="settingsPanel">
+        <label for="bgColor">Background Color:</label>
+        <input type="color" id="bgColor">
+
+        <label for="sentColor">Sent Bubble Color:</label>
+        <input type="color" id="sentColor">
+
+        <label for="receivedColor">Received Bubble Color:</label>
+        <input type="color" id="receivedColor">
+    </div>
+
+    <script>
+        const settingsBtn = document.getElementById("settingsBtn");
+        const settingsPanel = document.getElementById("settingsPanel");
+
+        settingsBtn.onclick = () => {
+            settingsPanel.style.display = settingsPanel.style.display === "block" ? "none" : "block";
+        };
+
+        document.getElementById("bgColor").oninput = (e) => {
+            document.body.style.setProperty("--chat-box-bg", e.target.value);
+        };
+
+        document.getElementById("sentColor").oninput = (e) => {
+            document.body.style.setProperty("--sent-bubble", e.target.value);
+        };
+
+        document.getElementById("receivedColor").oninput = (e) => {
+            document.body.style.setProperty("--received-bubble", e.target.value);
+        };
+    </script>
+</body>
+</html>
